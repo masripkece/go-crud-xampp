@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CRUD Produk & Kategori</title>
+</head>
+<body>
+  <h2>Tambah Kategori</h2>
+  <form id="form-kategori">
+    <input type="text" id="kategori-nama" placeholder="Nama Kategori" required />
+    <button type="submit">Tambah Kategori</button>
+  </form>
+
+  <h2>Tambah Produk</h2>
+  <form id="form-produk">
+    <input type="text" id="produk-nama" placeholder="Nama Produk" required />
+    <input type="number" id="produk-harga" placeholder="Harga" required />
+    <input type="number" id="produk-kategori" placeholder="ID Kategori" required />
+    <button type="submit">Tambah Produk</button>
+  </form>
+
+  <h2>Daftar Produk</h2>
+  <button onclick="loadProduk()">Muat Data</button>
+  <table border="1">
+    <thead>
+      <tr><th>ID</th><th>Nama</th><th>Harga</th><th>Kategori</th></tr>
+    </thead>
+    <tbody id="produk-list"></tbody>
+  </table>
+
+<script>
+  // Tambah kategori
+  document.getElementById('form-kategori').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nama = document.getElementById('kategori-nama').value;
+    await fetch('/kategori/create', {
+      method: 'POST',
+      body: new URLSearchParams({ nama })
+    });
+    alert('Kategori ditambahkan');
+    document.getElementById('kategori-nama').value = '';
+  });
+
+  // Tambah produk
+  document.getElementById('form-produk').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nama = document.getElementById('produk-nama').value;
+    const harga = document.getElementById('produk-harga').value;
+    const kategori_id = document.getElementById('produk-kategori').value;
+
+    await fetch('/produk/create', {
+      method: 'POST',
+      body: new URLSearchParams({ nama, harga, kategori_id })
+    });
+    alert('Produk ditambahkan');
+    document.getElementById('form-produk').reset();
+  });
+
+  // Muat data produk
+  async function loadProduk() {
+    const res = await fetch('/produk/read');
+    const data = await res.json();
+    const tbody = document.getElementById('produk-list');
+    tbody.innerHTML = '';
+    data.forEach(p => {
+      tbody.innerHTML += `<tr><td>${p.id}</td><td>${p.nama}</td><td>${p.harga}</td><td>${p.kategori}</td></tr>`;
+    });
+  }
+</script>
+</body>
+</html>
